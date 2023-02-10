@@ -4,38 +4,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 
-class AudioRecorder extends StatefulWidget {
+class AudioTestRecorder extends StatefulWidget {
   final void Function(String path) onStop;
 
-  const AudioRecorder({Key? key, required this.onStop}) : super(key: key);
+  const AudioTestRecorder({Key? key, required this.onStop}) : super(key: key);
 
   @override
-  State<AudioRecorder> createState() => _AudioRecorderState();
+  State<AudioTestRecorder> createState() => _AudioTestRecorderState();
 }
 
-class _AudioRecorderState extends State<AudioRecorder> {
+class _AudioTestRecorderState extends State<AudioTestRecorder> {
   int _recordDuration = 0;
   Timer? _timer;
   final _audioRecorder = Record();
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
-  StreamSubscription<Amplitude>? _amplitudeSub;
-  Amplitude? _amplitude;
 
   @override
   void initState() {
-    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
-      setState(() => _recordState = recordState);
-    });
-
-    _amplitudeSub = _audioRecorder
-        .onAmplitudeChanged(const Duration(milliseconds: 300))
-        .listen((amp) => setState(() => _amplitude = amp));
-
     super.initState();
   }
 
   Future<void> _start() async {
+    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
+      setState(() => _recordState = recordState);
+    });
     try {
       if (await _audioRecorder.hasPermission()) {
         // We don't do anything with this but printing
@@ -62,6 +55,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 
   Future<void> _stop() async {
+    _recordSub?.cancel();
     _timer?.cancel();
     _recordDuration = 0;
 
@@ -92,16 +86,9 @@ class _AudioRecorderState extends State<AudioRecorder> {
           children: <Widget>[
             _buildRecordStopControl(),
             const SizedBox(width: 20),
-            _buildPauseResumeControl(),
-            const SizedBox(width: 20),
             _buildText(),
           ],
         ),
-        if (_amplitude != null) ...[
-          const SizedBox(height: 40),
-          Text('Current: ${_amplitude?.current ?? 0.0}'),
-          Text('Max: ${_amplitude?.max ?? 0.0}'),
-        ],
       ],
     );
   }
@@ -110,7 +97,6 @@ class _AudioRecorderState extends State<AudioRecorder> {
   void dispose() {
     _timer?.cancel();
     _recordSub?.cancel();
-    _amplitudeSub?.cancel();
     _audioRecorder.dispose();
     super.dispose();
   }

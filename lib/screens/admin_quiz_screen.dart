@@ -32,15 +32,15 @@ class _AdminQuizScreenState extends State<AdminQuizScreen> {
         AdminQuizCard(
             seq: 1,
             onTapPlay: () => onPlayVideo(quiz.quiz1),
-            onTapEdit: () => onEditVideo(1)),
+            onTapUpload: () => onEditVideo(1)),
         AdminQuizCard(
             seq: 2,
             onTapPlay: () => onPlayVideo(quiz.quiz2),
-            onTapEdit: () => onEditVideo(2)),
+            onTapUpload: () => onEditVideo(2)),
         AdminQuizCard(
             seq: 3,
             onTapPlay: () => onPlayVideo(quiz.quiz3),
-            onTapEdit: () => onEditVideo(3)),
+            onTapUpload: () => onEditVideo(3)),
       ],
     );
   }

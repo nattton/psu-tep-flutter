@@ -29,26 +29,26 @@ class _ExamScreenState extends State<ExamScreen> {
       body: Center(
         child: showPlayer
             ? Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
-          child: AudioPlayer(
-            source: audioPath!,
-            onDelete: () {
-              setState(() => showPlayer = false);
-            },
-          ),
-        )
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: AudioPlayer(
+                  source: audioPath!,
+                  onDelete: () {
+                    setState(() => showPlayer = false);
+                  },
+                ),
+              )
             : AudioRecorder(
-          onStop: (path) async {
-            AppService appService = await AppService.getInstance();
-            await appService.sendAnswer(1, path);
+                onStop: (path) async {
+                  AppService appService = await AppService.getInstance();
+                  await appService.sendAnswer(1, path);
 
-            if (kDebugMode) print('Recorded file path: $path');
-            setState(() {
-              audioPath = path;
-              showPlayer = true;
-            });
-          },
-        ),
+                  if (kDebugMode) print('Recorded file path: $path');
+                  setState(() {
+                    audioPath = path;
+                    showPlayer = true;
+                  });
+                },
+              ),
       ),
     );
   }

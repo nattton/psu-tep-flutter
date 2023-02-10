@@ -3,6 +3,7 @@ import 'package:psutep/constants.dart';
 import 'package:psutep/screens/admin_screen.dart';
 import 'package:psutep/screens/exam_screen.dart';
 import 'package:psutep/screens/login_screen.dart';
+import 'package:psutep/screens/test_record_screen.dart';
 import 'package:psutep/services/app_service.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 
@@ -31,17 +32,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       });
       return;
     }
-    if (appService.getUser().role == "admin") {
+    if (appService.getRole() == "admin") {
       goAdminPage();
       return;
     }
 
-    if (appService.getUser().role == "rater") {
+    if (appService.getRole() == "rater") {
       goAdminPage();
       return;
     }
-
-    goExamPage();
+    if (appService.getRole() == "examinee") {
+      goTestRecordScreen();
+    }
   }
 
   void goLoginPage() {
@@ -54,8 +56,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     });
   }
 
-  void goExamPage() {
-    Navigator.of(context).pushNamed(ExamScreen.id).then((value) {
+  void goTestRecordScreen() {
+    Navigator.of(context).pushNamed(TestRecordScreen.id).then((value) {
       goLoginPage();
     });
   }

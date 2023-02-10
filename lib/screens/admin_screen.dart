@@ -28,7 +28,7 @@ class _AdminScreenState extends State<AdminScreen> {
     });
     AppService.getInstance().then((value) {
       appService = value;
-      if (appService.getUser().role != 'admin') {
+      if (appService.getRole() != 'admin') {
         appService.logout().then((value) {
           html.window.location.href = "/";
         });

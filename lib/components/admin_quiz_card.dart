@@ -6,11 +6,11 @@ class AdminQuizCard extends StatelessWidget {
       {super.key,
       required this.seq,
       required this.onTapPlay,
-      required this.onTapEdit});
+      required this.onTapUpload});
 
   final int seq;
   final VoidCallback onTapPlay;
-  final VoidCallback onTapEdit;
+  final VoidCallback onTapUpload;
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class AdminQuizCard extends StatelessWidget {
             ),
             Expanded(
               child: GestureDetector(
-                onTap: onTapEdit,
+                onTap: onTapUpload,
                 child: const Icon(
-                  Icons.edit,
+                  Icons.upload_file,
                   size: 30.0,
                 ),
               ),

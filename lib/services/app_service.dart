@@ -23,11 +23,14 @@ const kUserUrl = '$kHostUrl/api/user';
 const kQuizUrl = '$kHostUrl/api/quiz';
 
 const kTokenKey = 'TOKEN_KEY';
+const kRoleKey = 'ROLE_KEY';
 const kUserKey = 'USER_KEY';
+const kExamineeKey = 'EXAMINEE_KEY';
 
 class AppService {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late String _token;
+  late String _role;
   late User _user;
   late Examinee _examinee;
 
@@ -35,11 +38,19 @@ class AppService {
     AppService appService = AppService();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     appService._token = prefs.getString(kTokenKey) ?? '';
+    appService._role = prefs.getString(kRoleKey) ?? '';
     String? userString = prefs.getString(kUserKey);
     if (userString != null) {
       appService._user = User.fromJson(jsonDecode(userString));
     } else {
       appService._user = User(0, "", "");
+    }
+
+    String? examineeString = prefs.getString(kExamineeKey);
+    if (examineeString != null) {
+      appService._examinee = Examinee.fromJson(jsonDecode(examineeString));
+    } else {
+      appService._examinee = Examinee(0);
     }
     return appService;
   }
@@ -48,8 +59,16 @@ class AppService {
     return _token != '';
   }
 
+  String getRole() {
+    return _role;
+  }
+
   User getUser() {
     return _user;
+  }
+
+  Examinee getExaminee() {
+    return _examinee;
   }
 
   Future<void> _setToken(String token) async {
@@ -60,11 +79,18 @@ class AppService {
 
   Future<void> _setUser(User user) async {
     _user = user;
+    _role = user.role;
     SharedPreferences prefs = await _prefs;
     await prefs.setString(kUserKey, jsonEncode(user.toJson()));
+    await prefs.setString(kRoleKey, _role);
   }
 
   Future<void> _setExaminee(Examinee examinee) async {
+    _examinee = examinee;
+    _role = "examinee";
+    SharedPreferences prefs = await _prefs;
+    await prefs.setString(kExamineeKey, jsonEncode(examinee.toJson()));
+    await prefs.setString(kRoleKey, _role);
     _examinee = examinee;
   }
 
@@ -116,9 +142,10 @@ class AppService {
     if (response.statusCode == 200) {
       LoginExaminee loginData =
           LoginExaminee.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
-      print(response.body);
+
       if (loginData.token.isNotEmpty) {
         await _setToken(loginData.token);
+        await _setExaminee(loginData.examinee);
         return loginData;
       }
     }

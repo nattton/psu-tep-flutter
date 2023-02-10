@@ -41,7 +41,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
       itemCount: examineeList.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          var examinee = Examinee(id: 0);
+          var examinee = Examinee(0);
           return AdminExamineeCard(
               examinee: examinee, onTap: () => onPressedAdd(context, examinee));
         }
@@ -63,7 +63,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
   void addExaminee(Examinee examinee) {
     appService
         .addExaminee(
-      examinee.id!,
+      examinee.id,
       _codeController.text,
       _firstnameController.text,
       _lastnameController.text,
@@ -79,7 +79,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
   void saveExaminee(Examinee examinee) {
     appService
         .saveExaminee(
-      examinee.id!,
+      examinee.id,
       _codeController.text,
       _firstnameController.text,
       _lastnameController.text,

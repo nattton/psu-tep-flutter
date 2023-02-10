@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:psutep/screens/test_record_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:psutep/constants.dart';
 import 'package:psutep/screens/admin_screen.dart';
@@ -295,11 +296,11 @@ class _LoginScreenState extends State<LoginScreen> {
             _lastnameController.text)
         .then((value) {
       setState(() {
-        // _codeController.text = '';
-        // _firstnameController.text = '';
-        // _lastnameController.text = '';
+        _codeController.text = '';
+        _firstnameController.text = '';
+        _lastnameController.text = '';
       });
-      goExamPage();
+      goTestRecordScreen();
     }).catchError((error) {
       alertLogin(error.toString());
     });
@@ -318,18 +319,18 @@ class _LoginScreenState extends State<LoginScreen> {
         _usernameController.text = '';
         _passwordController.text = '';
       });
-      goAdminPage();
+      goAdminScreen();
     }).catchError((error) {
       alertLogin(error.toString());
     });
   }
 
-  void goAdminPage() {
+  void goAdminScreen() {
     Navigator.of(context).pushNamed(AdminScreen.id);
   }
 
-  void goExamPage() {
-    Navigator.of(context).pushNamed(ExamScreen.id);
+  void goTestRecordScreen() {
+    Navigator.of(context).pushNamed(TestRecordScreen.id);
   }
 
   void alertLogin(String desc) {
