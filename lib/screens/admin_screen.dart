@@ -1,8 +1,10 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
-import 'package:psutep/screens/examinee_list_screen.dart';
-import 'package:psutep/screens/user_list_screen.dart';
+import 'package:psutep/screens/admin_quiz_screen.dart';
+import 'package:psutep/screens/admin_examinee_screen.dart';
+import 'package:psutep/screens/admin_user_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -94,7 +96,7 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               SideMenuItem(
                 priority: 2,
-                title: 'Exam',
+                title: 'Quizzes',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
                 },
@@ -126,20 +128,15 @@ class _AdminScreenState extends State<AdminScreen> {
               children: [
                 Container(
                   color: Colors.white,
-                  child: const ExamineeListScreen(),
+                  child: const AdminExamineeScreen(),
                 ),
                 Container(
                   color: Colors.white,
-                  child: const UserListScreen(),
+                  child: const AdminUserScreen(),
                 ),
                 Container(
                   color: Colors.white,
-                  child: const Center(
-                    child: Text(
-                      'Exam',
-                      style: TextStyle(fontSize: 35),
-                    ),
-                  ),
+                  child: const AdminQuizScreen(),
                 ),
                 Container(
                   color: Colors.white,

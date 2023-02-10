@@ -3,6 +3,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:psutep/models/exam.dart';
 import 'package:psutep/models/message_response.dart';
 import 'package:psutep/models/examinee.dart';
 import 'package:psutep/models/login_examinee.dart';
@@ -16,9 +17,10 @@ const kLoginUrl = '$kHostUrl/api/login';
 const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/answer';
 const kExamineeListUrl = '$kHostUrl/api/examinees';
-const kSaveExamineeUrl = '$kHostUrl/api/examinee';
+const kExamineeUrl = '$kHostUrl/api/examinee';
 const kUserListUrl = '$kHostUrl/api/users';
-const kSaveUserUrl = '$kHostUrl/api/user';
+const kUserUrl = '$kHostUrl/api/user';
+const kQuizUrl = '$kHostUrl/api/quiz';
 
 const kTokenKey = 'TOKEN_KEY';
 const kUserKey = 'USER_KEY';
@@ -174,7 +176,7 @@ class AppService {
       "lastname": lastname,
     };
     final response = await http.post(
-      Uri.parse(kSaveExamineeUrl),
+      Uri.parse(kExamineeUrl),
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
@@ -188,6 +190,32 @@ class AppService {
     return Future.error(response.body);
   }
 
+  Future addExaminee(
+      int id, String code, String firstname, String lastname) async {
+    Map<String, String> body = {
+      "code": code,
+      "firstname": firstname,
+      "lastname": lastname,
+    };
+    final response = await http.post(
+      Uri.parse(kExamineeUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+      body: jsonEncode(body).toString(),
+    );
+    if (response.statusCode == 201) {
+      MessageResponse msgResponse =
+          MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      return msgResponse;
+    } else if (response.statusCode == 304) {
+      return Future.error("not modified");
+    }
+
+    ErrorResponse errorResponse =
+        ErrorResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+
+    return Future.error(errorResponse.error);
+  }
+
   Future saveExaminee(
       int id, String code, String firstname, String lastname) async {
     Map<String, String> body = {
@@ -196,7 +224,7 @@ class AppService {
       "lastname": lastname,
     };
     final response = await http.patch(
-      Uri.parse('$kSaveExamineeUrl/$id'),
+      Uri.parse('$kExamineeUrl/$id'),
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
@@ -237,7 +265,7 @@ class AppService {
       "password": password,
     };
     final response = await http.patch(
-      Uri.parse('$kSaveUserUrl/$id'),
+      Uri.parse('$kUserUrl/$id'),
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
@@ -245,6 +273,42 @@ class AppService {
       MessageResponse msgResponse =
           MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       return msgResponse;
+    } else if (response.statusCode == 304) {
+      return Future.error("not modified");
+    }
+    return Future.error(response.body);
+  }
+
+  Future<Quiz> fetchQuiz() async {
+    final response = await http.get(
+      Uri.parse(kQuizUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+    );
+    if (response.statusCode == 200) {
+      Quiz exam = Quiz.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      return exam;
+    }
+
+    return Future.error(response.body);
+  }
+
+  Future saveQuiz(int seq, Uint8List videoBytes) async {
+    Uri uri = Uri.parse(kQuizUrl);
+    var request = http.MultipartRequest('PATCH', uri);
+    request.headers['Authorization'] = _token;
+    request.files.add(http.MultipartFile.fromBytes('quiz$seq', videoBytes,
+        filename: 'quiz$seq.mp4', contentType: MediaType('video', 'mp4')));
+    http.StreamedResponse streamedResponse = await request.send();
+    if (streamedResponse.statusCode != 201) {
+      return '';
+    }
+    final response = await http.Response.fromStream(streamedResponse);
+    if (kDebugMode) {
+      print(response.body);
+    }
+
+    if (response.statusCode == 200) {
+      return "Save file succeed.";
     } else if (response.statusCode == 304) {
       return Future.error("not modified");
     }

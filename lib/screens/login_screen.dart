@@ -157,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
                           ),
+                          onSubmitted: (_) => loginExaminee(),
                         ),
                         const SizedBox(height: 18.0),
                         Container(
@@ -239,6 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0)),
                           ),
+                          onSubmitted: (_) => loginUser(),
                         ),
                         const SizedBox(height: 18.0),
                         Container(

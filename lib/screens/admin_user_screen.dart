@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:psutep/components/user_list_card.dart';
-import 'package:psutep/constants.dart';
 import 'package:psutep/models/user.dart';
 import 'package:psutep/services/app_service.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-class UserListScreen extends StatefulWidget {
-  const UserListScreen({Key? key}) : super(key: key);
+class AdminUserScreen extends StatefulWidget {
+  const AdminUserScreen({Key? key}) : super(key: key);
 
   @override
-  State<UserListScreen> createState() => _UserListScreenState();
+  State<AdminUserScreen> createState() => _AdminUserScreenState();
 }
 
-class _UserListScreenState extends State<UserListScreen> {
+class _AdminUserScreenState extends State<AdminUserScreen> {
   late AppService appService;
   List<User> userList = [];
   final _usernameController = TextEditingController();
@@ -37,11 +36,17 @@ class _UserListScreenState extends State<UserListScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: userList.length,
+      itemCount: userList.length + 1,
       itemBuilder: (context, index) {
+        if (index == 0) {
+          return UserListCard(
+            user: User(0, 'Username', 'Role'),
+            onTap: () {},
+          );
+        }
         return UserListCard(
-            user: userList[index],
-            onTap: () => onPressedRow(context, userList[index]));
+            user: userList[index - 1],
+            onTap: () => onPressedRow(context, userList[index - 1]));
       },
     );
   }

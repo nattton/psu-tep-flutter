@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:psutep/constants.dart';
 import 'package:psutep/screens/admin_screen.dart';
 import 'package:psutep/screens/exam_screen.dart';
+import 'package:psutep/screens/player_video_screen.dart';
 import 'package:psutep/screens/welcome_screen.dart';
 import 'login_screen.dart';
 
@@ -24,6 +25,12 @@ class MyApp extends StatelessWidget {
         ExamScreen.id: (context) => const ExamScreen(),
       },
       onGenerateRoute: (settings) {
+        if (settings.name == PlayerVideoScreen.id) {
+          final videoUrl = settings.arguments as String;
+          return MaterialPageRoute(builder: (context) {
+            return PlayerVideoScreen(videoUrl: videoUrl);
+          });
+        }
         return null;
       },
       debugShowCheckedModeBanner: false,

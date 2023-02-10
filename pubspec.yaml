@@ -38,6 +38,8 @@ dependencies:
   path_provider: ^2.0.12
   rflutter_alert: ^2.0.4
   easy_sidemenu: ^0.4.1+1
+  video_player: ^2.5.1
+  file_picker: ^5.2.5
 
 dev_dependencies:
   flutter_test:
