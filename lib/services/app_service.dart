@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:psutep/models/exam.dart';
+import 'package:psutep/models/examinees.dart';
 import 'package:psutep/models/message_response.dart';
 import 'package:psutep/models/examinee.dart';
 import 'package:psutep/models/login_examinee.dart';
@@ -17,6 +18,8 @@ const kLoginUrl = '$kHostUrl/api/login';
 const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/answer';
 const kExamineeListUrl = '$kHostUrl/api/examinees';
+const kExamineeByAdminListUrl = '$kHostUrl/api/admin/examinees';
+const kExamineeByRaterListUrl = '$kHostUrl/api/rater/examinees';
 const kExamineeUrl = '$kHostUrl/api/examinee';
 const kUserListUrl = '$kHostUrl/api/users';
 const kUserUrl = '$kHostUrl/api/user';
@@ -50,7 +53,7 @@ class AppService {
     if (examineeString != null) {
       appService._examinee = Examinee.fromJson(jsonDecode(examineeString));
     } else {
-      appService._examinee = Examinee(0);
+      appService._examinee = Examinee(0, []);
     }
     return appService;
   }
@@ -185,6 +188,23 @@ class AppService {
       try {
         final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
         return (res as List).map((data) => Examinee.fromJson(data)).toList();
+      } catch (e) {
+        if (kDebugMode) {
+          print('fetchExamineeList: $e');
+        }
+        return Future.error(response);
+      }
+    }
+    return Future.error(response);
+  }
+
+  Future<Examinees> fetchExamineeByRaterList() async {
+    final response = await http.get(Uri.parse(kExamineeByRaterListUrl),
+        headers: {'Authorization': 'Bearer $_token'});
+
+    if (response.statusCode == 200) {
+      try {
+        return Examinees.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       } catch (e) {
         if (kDebugMode) {
           print('fetchExamineeList: $e');

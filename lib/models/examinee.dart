@@ -1,5 +1,8 @@
+import 'package:psutep/models/score.dart';
+
 class Examinee {
   int id = 0;
+  List<Score> scores = [];
   String? code;
   String? firstname;
   String? lastname;
@@ -9,7 +12,8 @@ class Examinee {
   bool? finish;
 
   Examinee(
-    this.id, {
+    this.id,
+    this.scores, {
     this.code,
     this.firstname,
     this.lastname,
@@ -28,6 +32,10 @@ class Examinee {
     answer2 = json['answer2'] ?? '';
     answer3 = json['answer3'] ?? '';
     finish = json['finish'] ?? false;
+    if (json["scores"] != null) {
+      scores =
+          (json["scores"] as List).map((data) => Score.fromJson(data)).toList();
+    }
   }
 
   Map<String, dynamic> toJson() => {

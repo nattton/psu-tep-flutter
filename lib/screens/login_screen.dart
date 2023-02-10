@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:psutep/screens/rater_examinee_screen.dart';
 import 'package:psutep/screens/test_record_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:psutep/constants.dart';
@@ -319,7 +320,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _usernameController.text = '';
         _passwordController.text = '';
       });
-      goAdminScreen();
+      if (appService.getRole() == 'admin') {
+        goAdminScreen();
+      } else if (appService.getRole() == 'rater') {
+        goRaterScreen();
+      }
     }).catchError((error) {
       alertLogin(error.toString());
     });
@@ -327,6 +332,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void goAdminScreen() {
     Navigator.of(context).pushNamed(AdminScreen.id);
+  }
+
+  void goRaterScreen() {
+    Navigator.of(context).pushNamed(RaterExamineeScreen.id);
   }
 
   void goTestRecordScreen() {

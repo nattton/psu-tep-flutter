@@ -22,7 +22,7 @@ class _TestRecordScreenState extends State<TestRecordScreen> {
   late AppService appService;
   bool showPlayer = false;
   String? audioPath;
-  Examinee examinee = Examinee(0);
+  Examinee examinee = Examinee(0, []);
 
   @override
   void initState() {

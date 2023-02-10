@@ -41,7 +41,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
       itemCount: examineeList.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          var examinee = Examinee(0);
+          var examinee = Examinee(0, []);
           return AdminExamineeCard(
               examinee: examinee, onTap: () => onPressedAdd(context, examinee));
         }
