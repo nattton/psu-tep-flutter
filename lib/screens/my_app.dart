@@ -5,6 +5,7 @@ import 'package:psutep/screens/admin_screen.dart';
 import 'package:psutep/screens/exam_screen.dart';
 import 'package:psutep/screens/examinee_quiz_screen.dart';
 import 'package:psutep/screens/player_video_screen.dart';
+import 'package:psutep/screens/rater_answer_screen.dart';
 import 'package:psutep/screens/rater_examinee_screen.dart';
 import 'package:psutep/screens/test_record_screen.dart';
 import 'package:psutep/screens/welcome_screen.dart';
@@ -31,16 +32,25 @@ class MyApp extends StatelessWidget {
         ExamScreen.id: (context) => const ExamScreen(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name == PlayerVideoScreen.id) {
-          final videoUrl = settings.arguments as String;
-          return MaterialPageRoute(builder: (context) {
-            return PlayerVideoScreen(videoUrl: videoUrl);
-          });
-        } else if (settings.name == ExamineeQuizScreen.id) {
-          final quiz = settings.arguments as Quiz;
-          return MaterialPageRoute(builder: (context) {
-            return ExamineeQuizScreen(quiz: quiz);
-          });
+        switch (settings.name) {
+          case PlayerVideoScreen.id:
+            final videoUrl = settings.arguments as String;
+            return MaterialPageRoute(builder: (context) {
+              return PlayerVideoScreen(videoUrl: videoUrl);
+            });
+
+          case ExamineeQuizScreen.id:
+            final quiz = settings.arguments as Quiz;
+            return MaterialPageRoute(builder: (context) {
+              return ExamineeQuizScreen(quiz: quiz);
+            });
+          case RaterAnswerScreen.id:
+            final map = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(builder: (context) {
+              return RaterAnswerScreen(
+                  quiz: map["quiz"], examinee: map["examinee"]);
+            });
+          default:
         }
         return null;
       },

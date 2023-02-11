@@ -4,7 +4,6 @@ import 'package:psutep/screens/test_record_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:psutep/constants.dart';
 import 'package:psutep/screens/admin_screen.dart';
-import 'package:psutep/screens/exam_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -196,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         const Text(
-                          'Admin Login',
+                          'User Login',
                           style: TextStyle(
                             fontSize: 20.0,
                             fontFamily: kDefaultFont,
@@ -276,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                 },
                 style: TextButton.styleFrom(foregroundColor: kColorBottom),
-                child: Text(examineeForm ? 'Admin Login' : 'Examinee Login'),
+                child: Text(examineeForm ? 'User Login' : 'Examinee Login'),
               )
             ],
           ),

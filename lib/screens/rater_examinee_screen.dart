@@ -2,12 +2,13 @@
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:psutep/components/rater_examinee_card.dart';
+import 'package:psutep/models/exam.dart';
 import 'package:psutep/models/examinee.dart';
-import 'package:psutep/models/examinees.dart';
+import 'package:psutep/screens/rater_answer_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
 class RaterExamineeScreen extends StatefulWidget {
-  static String id = 'RaterExamineeScreen';
+  static const String id = 'rater_examinee_screen';
   const RaterExamineeScreen({super.key});
 
   @override
@@ -16,13 +17,15 @@ class RaterExamineeScreen extends StatefulWidget {
 
 class _RaterExamineeScreenState extends State<RaterExamineeScreen> {
   late AppService appService;
-  Examinees examinees = Examinees("", []);
+  late Quiz quiz;
+  List<Examinee> examinees = [];
 
   @override
   void initState() {
     super.initState();
     AppService.getInstance().then((value) {
       appService = value;
+      getQuiz();
       getExamineeByRater();
     });
   }
@@ -51,19 +54,26 @@ class _RaterExamineeScreenState extends State<RaterExamineeScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: examinees.examinees.length + 1,
+        itemCount: examinees.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             var examinee = Examinee(0, []);
-            return RaterExamineeCard(
-                examinee: examinee,
-                onTap: () => onPressedAdd(context, examinee));
+            return RaterExamineeCard(examinee: examinee, onTap: () {});
           }
           return RaterExamineeCard(
-              examinee: examinees.examinees[index - 1], onTap: () => {});
+              examinee: examinees[index - 1],
+              onTap: () => onPressedView(examinees[index - 1]));
         },
       ),
     );
+  }
+
+  Future<void> getQuiz() async {
+    appService.fetchQuiz().then((value) {
+      setState(() {
+        quiz = value;
+      });
+    }).catchError((error) {});
   }
 
   Future<void> getExamineeByRater() async {
@@ -74,5 +84,9 @@ class _RaterExamineeScreenState extends State<RaterExamineeScreen> {
     }).catchError((error) {});
   }
 
-  void onPressedAdd(BuildContext context, Examinee examinee) {}
+  void onPressedView(Examinee examinee) async {
+    await Navigator.of(context).pushNamed(RaterAnswerScreen.id,
+        arguments: {"quiz": quiz, 'examinee': examinee});
+    getExamineeByRater();
+  }
 }

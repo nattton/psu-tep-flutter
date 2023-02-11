@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class PlayerVideoScreen extends StatefulWidget {
-  static String id = "PlayerVideoScreen";
+  static const String id = "PlayerVideoScreen";
   const PlayerVideoScreen({super.key, required this.videoUrl});
 
   final String videoUrl;

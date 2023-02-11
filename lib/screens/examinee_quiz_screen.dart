@@ -9,7 +9,7 @@ import 'package:record/record.dart';
 import 'package:video_player/video_player.dart';
 
 class ExamineeQuizScreen extends StatefulWidget {
-  static String id = "ExamineeQuizScreen";
+  static const String id = "ExamineeQuizScreen";
   const ExamineeQuizScreen({super.key, required this.quiz});
 
   final Quiz quiz;

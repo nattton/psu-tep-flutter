@@ -18,8 +18,9 @@ const kLoginUrl = '$kHostUrl/api/login';
 const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/answer';
 const kExamineeListUrl = '$kHostUrl/api/examinees';
-const kExamineeByAdminListUrl = '$kHostUrl/api/admin/examinees';
-const kExamineeByRaterListUrl = '$kHostUrl/api/rater/examinees';
+const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees';
+const kRaterExamineeListUrl = '$kHostUrl/api/rater/examinees';
+const kRaterScoreUrl = '$kHostUrl/api/rater/score';
 const kExamineeUrl = '$kHostUrl/api/examinee';
 const kUserListUrl = '$kHostUrl/api/users';
 const kUserUrl = '$kHostUrl/api/user';
@@ -198,21 +199,44 @@ class AppService {
     return Future.error(response);
   }
 
-  Future<Examinees> fetchExamineeByRaterList() async {
-    final response = await http.get(Uri.parse(kExamineeByRaterListUrl),
+  Future<List<Examinee>> fetchExamineeByRaterList() async {
+    final response = await http.get(Uri.parse(kRaterExamineeListUrl),
         headers: {'Authorization': 'Bearer $_token'});
-
     if (response.statusCode == 200) {
       try {
-        return Examinees.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+        final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
+        return (res as List).map((data) => Examinee.fromJson(data)).toList();
       } catch (e) {
         if (kDebugMode) {
-          print('fetchExamineeList: $e');
+          print('fetchExamineeByRaterList: $e');
         }
         return Future.error(response);
       }
     }
     return Future.error(response);
+  }
+
+  Future rateScore(
+      int examineeID, double answer1, double answer2, double answer3) async {
+    Map<String, dynamic> body = {
+      "examinee_id": examineeID,
+      "answer1": answer1,
+      "answer2": answer2,
+      "answer3": answer3,
+    };
+    final response = await http.post(
+      Uri.parse(kRaterScoreUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+      body: jsonEncode(body).toString(),
+    );
+    if (response.statusCode == 200) {
+      MessageResponse msgResponse =
+          MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      return msgResponse;
+    } else if (response.statusCode == 304) {
+      return Future.error("not modified");
+    }
+    return Future.error(response.body);
   }
 
   Future createExaminee(

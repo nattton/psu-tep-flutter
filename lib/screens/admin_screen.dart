@@ -8,7 +8,7 @@ import 'package:psutep/screens/admin_user_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
 class AdminScreen extends StatefulWidget {
-  static String id = 'admin_screen';
+  static const String id = 'admin_screen';
 
   const AdminScreen({super.key});
 
