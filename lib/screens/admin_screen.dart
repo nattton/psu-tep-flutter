@@ -4,6 +4,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:psutep/screens/admin_quiz_screen.dart';
 import 'package:psutep/screens/admin_examinee_screen.dart';
+import 'package:psutep/screens/admin_score_screen.dart';
 import 'package:psutep/screens/admin_user_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
@@ -141,10 +142,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 Container(
                   color: Colors.white,
                   child: const Center(
-                    child: Text(
-                      'Score',
-                      style: TextStyle(fontSize: 35),
-                    ),
+                    child: AdminScoreScreen(),
                   ),
                 ),
                 Container(

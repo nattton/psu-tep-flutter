@@ -26,6 +26,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   late AppService appService;
   late VideoPlayerController _controller;
   final _audioPlayer = ap.AudioPlayer();
+  bool canRateScore = false;
   int quizNumber = 1;
   final _score1Controller = TextEditingController();
   final _score2Controller = TextEditingController();
@@ -37,7 +38,12 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   @override
   void initState() {
     super.initState();
-    AppService.getInstance().then((value) => appService = value);
+    AppService.getInstance().then((value) {
+      appService = value;
+      setState(() {
+        canRateScore = appService.getRole() == "rater";
+      });
+    });
     setUpVideo(quiz.quiz1);
   }
 
@@ -162,72 +168,78 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                   )),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _score1Controller,
-                        autofocus: false,
-                        autocorrect: false,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Score Quiz 1',
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
+              Visibility(
+                visible: canRateScore,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _score1Controller,
+                          autofocus: false,
+                          autocorrect: false,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Score Quiz 1',
+                            contentPadding: const EdgeInsets.fromLTRB(
+                                20.0, 20.0, 20.0, 20.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _score2Controller,
-                        autofocus: false,
-                        autocorrect: false,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Score Quiz 2',
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _score2Controller,
+                          autofocus: false,
+                          autocorrect: false,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Score Quiz 2',
+                            contentPadding: const EdgeInsets.fromLTRB(
+                                20.0, 20.0, 20.0, 20.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _score3Controller,
-                        autofocus: false,
-                        autocorrect: false,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Score Quiz 3',
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _score3Controller,
+                          autofocus: false,
+                          autocorrect: false,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Score Quiz 3',
+                            contentPadding: const EdgeInsets.fromLTRB(
+                                20.0, 20.0, 20.0, 20.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0)),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 20.0,
               ),
-              ElevatedButton(
-                  onPressed: () => onSubmitScore(),
-                  child: const Text('Submit Score')),
+              Visibility(
+                visible: canRateScore,
+                child: ElevatedButton(
+                    onPressed: () => onSubmitScore(),
+                    child: const Text('Submit Score')),
+              ),
             ],
           ),
         ),

@@ -216,6 +216,23 @@ class AppService {
     return Future.error(response);
   }
 
+  Future<List<Examinee>> fetchExamineeByAdminList() async {
+    final response = await http.get(Uri.parse(kAdminExamineeListUrl),
+        headers: {'Authorization': 'Bearer $_token'});
+    if (response.statusCode == 200) {
+      try {
+        final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
+        return (res as List).map((data) => Examinee.fromJson(data)).toList();
+      } catch (e) {
+        if (kDebugMode) {
+          print('fetchExamineeByAdminList: $e');
+        }
+        return Future.error(response);
+      }
+    }
+    return Future.error(response);
+  }
+
   Future rateScore(
       int examineeID, double answer1, double answer2, double answer3) async {
     Map<String, dynamic> body = {
