@@ -19,7 +19,8 @@ const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/answer';
 const kExamineeListUrl = '$kHostUrl/api/examinees';
 const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees';
-const kAdminScoresListUrl = '$kHostUrl/api/admin/scores';
+const kAdminScoresUrl = '$kHostUrl/api/admin/scores';
+const kAdminAnswersUrl = '$kHostUrl/api/admin/answers';
 const kRaterExamineeListUrl = '$kHostUrl/api/rater/examinees';
 const kRaterScoreUrl = '$kHostUrl/api/rater/score';
 const kExamineeUrl = '$kHostUrl/api/examinee';
@@ -402,15 +403,30 @@ class AppService {
     return Future.error(response.body);
   }
 
-  Future<String> fetchScoreExcel() async {
+  Future<String> downloadScoreExcel() async {
     final response = await http.get(
-      Uri.parse(kAdminScoresListUrl),
+      Uri.parse(kAdminScoresUrl),
       headers: {'Authorization': 'Bearer $_token'},
     );
     if (response.statusCode == 200) {
       final path = await FileSaver.instance.saveFile(
-          "score", response.bodyBytes, "xlsx",
+          "report_scores", response.bodyBytes, "xlsx",
           mimeType: MimeType.MICROSOFTEXCEL);
+      return "Download file Success.";
+    }
+
+    return Future.error(response.body);
+  }
+
+  Future<String> downloadAnswersAudio() async {
+    final response = await http.get(
+      Uri.parse(kAdminAnswersUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+    );
+    if (response.statusCode == 200) {
+      final path = await FileSaver.instance.saveFile(
+          "answers_audio", response.bodyBytes, "zip",
+          mimeType: MimeType.ZIP);
       return "Download file Success.";
     }
 

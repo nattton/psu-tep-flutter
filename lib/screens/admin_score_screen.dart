@@ -37,11 +37,16 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
           if (index == 0) {
             var examinee = Examinee(0, []);
             return AdminScoreCard(
-                examinee: examinee, onTap: () => onPressedDownload());
+              examinee: examinee,
+              onTap: () => onPressedDownloadAnswers(),
+              onTapScore: () => onPressedDownloadReport(),
+            );
           }
           return AdminScoreCard(
-              examinee: examinees[index - 1],
-              onTap: () => onPressedView(examinees[index - 1]));
+            examinee: examinees[index - 1],
+            onTap: () => onPressedView(examinees[index - 1]),
+            onTapScore: () {},
+          );
         },
       ),
     );
@@ -63,8 +68,12 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     }).catchError((error) {});
   }
 
-  void onPressedDownload() {
-    appService.fetchScoreExcel().then((value) {}).catchError((error) {});
+  void onPressedDownloadReport() {
+    appService.downloadScoreExcel().then((value) {}).catchError((error) {});
+  }
+
+  void onPressedDownloadAnswers() {
+    appService.downloadAnswersAudio().then((value) {}).catchError((error) {});
   }
 
   void onPressedView(Examinee examinee) async {

@@ -5,10 +5,14 @@ import 'package:psutep/models/score.dart';
 
 class AdminScoreCard extends StatelessWidget {
   const AdminScoreCard(
-      {super.key, required this.examinee, required this.onTap});
+      {super.key,
+      required this.examinee,
+      required this.onTap,
+      required this.onTapScore});
 
   final Examinee examinee;
   final VoidCallback onTap;
+  final VoidCallback onTapScore;
 
   @override
   Widget build(BuildContext context) {
@@ -46,19 +50,39 @@ class AdminScoreCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 2,
-                    child: Text(
-                      'Score',
-                      style: TextStyle(
-                          fontFamily: kDefaultFont,
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold),
+                    child: Center(
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                                text: 'Score ',
+                                style: TextStyle(
+                                    fontFamily: kDefaultFont,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.bold)),
+                            WidgetSpan(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2.0),
+                                child: GestureDetector(
+                                  onTap: onTapScore,
+                                  child: const Icon(
+                                    Icons.table_view,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   GestureDetector(
                     onTap: onTap,
-                    child: const Icon(Icons.download, color: Colors.green),
+                    child: const Icon(Icons.audio_file, color: Colors.green),
                   ),
                 ],
               ),
