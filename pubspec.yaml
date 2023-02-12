@@ -35,11 +35,11 @@ dependencies:
   flutter_html: ^2.2.1
   cross_file: ^0.3.3+4
   http_parser: ^4.0.2
-  path_provider: ^2.0.12
   rflutter_alert: ^2.0.4
   easy_sidemenu: ^0.4.1+1
   video_player: ^2.5.1
   file_picker: ^5.2.5
+  file_saver: ^0.1.1
 
 dev_dependencies:
   flutter_test:

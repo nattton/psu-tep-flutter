@@ -18,8 +18,8 @@ class AdminScoreCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: const [
-                  Expanded(
+                children: [
+                  const Expanded(
                     child: Text(
                       'Code',
                       style: TextStyle(
@@ -28,7 +28,7 @@ class AdminScoreCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Firstname',
                       style: TextStyle(
@@ -37,7 +37,7 @@ class AdminScoreCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Lastname',
                       style: TextStyle(
@@ -46,7 +46,7 @@ class AdminScoreCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                     flex: 2,
                     child: Text(
                       'Score',
@@ -56,7 +56,10 @@ class AdminScoreCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(width: 20.0),
+                  GestureDetector(
+                    onTap: onTap,
+                    child: const Icon(Icons.download, color: Colors.green),
+                  ),
                 ],
               ),
             ),

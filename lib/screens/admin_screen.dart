@@ -24,9 +24,6 @@ class _AdminScreenState extends State<AdminScreen> {
 
   @override
   void initState() {
-    sideMenu.addListener((p0) {
-      page.jumpToPage(p0);
-    });
     AppService.getInstance().then((value) {
       appService = value;
       if (appService.getRole() != 'admin') {
@@ -35,6 +32,9 @@ class _AdminScreenState extends State<AdminScreen> {
         });
         return;
       }
+    });
+    sideMenu.addListener((p0) {
+      page.jumpToPage(p0);
     });
     super.initState();
   }

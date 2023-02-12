@@ -32,15 +32,15 @@ class _AdminQuizScreenState extends State<AdminQuizScreen> {
         AdminQuizCard(
             seq: 1,
             onTapPlay: () => onPlayVideo(quiz.quiz1),
-            onTapUpload: () => onEditVideo(1)),
+            onTapUpload: () => onUploadVideo(1)),
         AdminQuizCard(
             seq: 2,
             onTapPlay: () => onPlayVideo(quiz.quiz2),
-            onTapUpload: () => onEditVideo(2)),
+            onTapUpload: () => onUploadVideo(2)),
         AdminQuizCard(
             seq: 3,
             onTapPlay: () => onPlayVideo(quiz.quiz3),
-            onTapUpload: () => onEditVideo(3)),
+            onTapUpload: () => onUploadVideo(3)),
       ],
     );
   }
@@ -55,14 +55,14 @@ class _AdminQuizScreenState extends State<AdminQuizScreen> {
     Navigator.of(context).pushNamed(PlayerVideoScreen.id, arguments: videoUrl);
   }
 
-  void onEditVideo(int seq) async {
+  void onUploadVideo(int seq) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['mp4'],
     );
 
     if (result != null) {
-      appService.saveQuiz(seq, result.files.first.bytes!).then((value) {
+      appService.uploadQuiz(seq, result.files.first.bytes!).then((value) {
         alertMessage('Save quiz succeed.');
         getQuiz();
       }).catchError((error) {

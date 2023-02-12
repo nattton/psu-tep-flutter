@@ -1,5 +1,3 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:psutep/components/admin_score_card.dart';
 import 'package:psutep/models/exam.dart';
@@ -26,7 +24,7 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     AppService.getInstance().then((value) {
       appService = value;
       getQuiz();
-      getExamineeByRater();
+      getExamineeByAdmin();
     });
   }
 
@@ -38,7 +36,8 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
         itemBuilder: (context, index) {
           if (index == 0) {
             var examinee = Examinee(0, []);
-            return AdminScoreCard(examinee: examinee, onTap: () {});
+            return AdminScoreCard(
+                examinee: examinee, onTap: () => onPressedDownload());
           }
           return AdminScoreCard(
               examinee: examinees[index - 1],
@@ -56,7 +55,7 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     }).catchError((error) {});
   }
 
-  Future<void> getExamineeByRater() async {
+  Future<void> getExamineeByAdmin() async {
     appService.fetchExamineeByAdminList().then((value) {
       setState(() {
         examinees = value;
@@ -64,9 +63,13 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     }).catchError((error) {});
   }
 
+  void onPressedDownload() {
+    appService.fetchScoreExcel().then((value) {}).catchError((error) {});
+  }
+
   void onPressedView(Examinee examinee) async {
     await Navigator.of(context).pushNamed(RaterAnswerScreen.id,
         arguments: {"quiz": quiz, 'examinee': examinee});
-    getExamineeByRater();
+    getExamineeByAdmin();
   }
 }

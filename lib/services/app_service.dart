@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:psutep/models/exam.dart';
-import 'package:psutep/models/examinees.dart';
 import 'package:psutep/models/message_response.dart';
 import 'package:psutep/models/examinee.dart';
 import 'package:psutep/models/login_examinee.dart';
@@ -19,6 +19,7 @@ const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/answer';
 const kExamineeListUrl = '$kHostUrl/api/examinees';
 const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees';
+const kAdminScoresListUrl = '$kHostUrl/api/admin/scores';
 const kRaterExamineeListUrl = '$kHostUrl/api/rater/examinees';
 const kRaterScoreUrl = '$kHostUrl/api/rater/score';
 const kExamineeUrl = '$kHostUrl/api/examinee';
@@ -380,7 +381,7 @@ class AppService {
     return Future.error(response.body);
   }
 
-  Future saveQuiz(int seq, Uint8List videoBytes) async {
+  Future uploadQuiz(int seq, Uint8List videoBytes) async {
     Uri uri = Uri.parse(kQuizUrl);
     var request = http.MultipartRequest('PATCH', uri);
     request.headers['Authorization'] = _token;
@@ -397,9 +398,22 @@ class AppService {
 
     if (response.statusCode == 200) {
       return "Save file succeed.";
-    } else if (response.statusCode == 304) {
-      return Future.error("not modified");
     }
+    return Future.error(response.body);
+  }
+
+  Future<String> fetchScoreExcel() async {
+    final response = await http.get(
+      Uri.parse(kAdminScoresListUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+    );
+    if (response.statusCode == 200) {
+      final path = await FileSaver.instance.saveFile(
+          "score", response.bodyBytes, "xlsx",
+          mimeType: MimeType.MICROSOFTEXCEL);
+      return "Download file Success.";
+    }
+
     return Future.error(response.body);
   }
 }
