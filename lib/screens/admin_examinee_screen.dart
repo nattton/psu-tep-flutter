@@ -1,5 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:psutep/components/admin_examinee_card.dart';
@@ -26,7 +27,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
     super.initState();
     AppService.getInstance().then((value) {
       appService = value;
-      getExaminee();
+      getExaminees();
     });
   }
 
@@ -42,7 +43,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
     Response response = error as Response;
     switch (response.statusCode) {
       case 304:
-        alertError("not modified");
+        alertMessage("not modified");
         break;
       case 401:
         appService.logout().then((value) {
@@ -56,21 +57,58 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: examineeList.length + 1,
+      itemCount: examineeList.length + 2,
       itemBuilder: (context, index) {
         if (index == 0) {
+          return Card(
+            color: Colors.red.shade100,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => uploadExaminees(),
+                    child: const Icon(Icons.upload_file),
+                  ),
+                  const SizedBox(
+                    width: 10.0,
+                  ),
+                  const Text('Upload file excel'),
+                  GestureDetector(
+                    onTap: () => sampleExaminees(),
+                    child: const Icon(
+                      Icons.info,
+                      size: 20.0,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 30.0,
+                  ),
+                  GestureDetector(
+                    onTap: () => onPressedAdd(context),
+                    child: const Icon(Icons.person_add),
+                  ),
+                  const SizedBox(
+                    width: 10.0,
+                  ),
+                  const Text('Add new'),
+                ],
+              ),
+            ),
+          );
+        }
+        if (index == 1) {
           var examinee = Examinee(0, []);
-          return AdminExamineeCard(
-              examinee: examinee, onTap: () => onPressedAdd(context, examinee));
+          return AdminExamineeCard(examinee: examinee, onTap: () {});
         }
         return AdminExamineeCard(
-            examinee: examineeList[index - 1],
-            onTap: () => onPressedEdit(context, examineeList[index - 1]));
+            examinee: examineeList[index - 2],
+            onTap: () => onPressedEdit(context, examineeList[index - 2]));
       },
     );
   }
 
-  Future<void> getExaminee() async {
+  Future<void> getExaminees() async {
     appService.fetchExamineeList().then((value) {
       setState(() {
         examineeList = value;
@@ -80,7 +118,25 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
     });
   }
 
-  void addExaminee(Examinee examinee) {
+  Future<void> uploadExaminees() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['xlsx'],
+    );
+
+    if (result != null) {
+      appService.uploadExaminees(result.files.first.bytes!).then((value) {
+        alertMessage(value);
+        getExaminees();
+      }).catchError((error) {
+        alertMessage(error.toString());
+      });
+    } else {
+      // User canceled the picker
+    }
+  }
+
+  void creatExaminee() {
     appService
         .createExaminee(
       _codeController.text,
@@ -89,7 +145,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
     )
         .then((value) {
       Navigator.pop(context);
-      getExaminee();
+      getExaminees();
     }).catchError((error) {
       handlerErrorResponse(error);
     });
@@ -104,16 +160,34 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
       _lastnameController.text,
     )
         .then((value) {
-      getExaminee();
+      getExaminees();
     }).catchError((error) {
       handlerErrorResponse(error);
     });
   }
 
-  void onPressedAdd(BuildContext context, Examinee examinee) {
-    _codeController.text = examinee.code ?? '';
-    _firstnameController.text = examinee.firstname ?? '';
-    _lastnameController.text = examinee.lastname ?? '';
+  void sampleExaminees() {
+    Alert(
+      context: context,
+      title: "Sample Excel template.",
+      image: Image.asset("images/sample_examinees.png"),
+      buttons: [
+        DialogButton(
+          onPressed: () => Navigator.pop(context),
+          width: 120,
+          child: const Text(
+            "COOL",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        )
+      ],
+    ).show();
+  }
+
+  void onPressedAdd(BuildContext context) {
+    _codeController.text = '';
+    _firstnameController.text = '';
+    _lastnameController.text = '';
 
     Alert(
         context: context,
@@ -164,7 +238,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
-              onSubmitted: (value) => addExaminee(examinee),
+              onSubmitted: (value) => creatExaminee(),
             ),
           ],
         ),
@@ -172,10 +246,10 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
           DialogButton(
             onPressed: () {
               Navigator.pop(context);
-              updateExaminee(examinee);
+              creatExaminee();
             },
             child: const Text(
-              "Update",
+              "Create",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
@@ -257,12 +331,12 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
         ]).show();
   }
 
-  void alertError(String msg) {
+  void alertMessage(String msg) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Alert Message'),
+            title: const Text('Info'),
             content: Text(msg),
             actions: [
               TextButton(

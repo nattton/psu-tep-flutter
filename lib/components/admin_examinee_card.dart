@@ -17,8 +17,8 @@ class AdminExamineeCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: [
-                  const Expanded(
+                children: const [
+                  Expanded(
                     child: Text(
                       'Code',
                       style: TextStyle(
@@ -27,7 +27,7 @@ class AdminExamineeCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Firstname',
                       style: TextStyle(
@@ -36,7 +36,7 @@ class AdminExamineeCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Lastname',
                       style: TextStyle(
@@ -45,10 +45,9 @@ class AdminExamineeCard extends StatelessWidget {
                           fontWeight: FontWeight.bold),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: const Icon(Icons.person_add),
-                  ),
+                  SizedBox(
+                    width: 24.0,
+                  )
                 ],
               ),
             ),

@@ -20,9 +20,10 @@ const kAdminUserListUrl = '$kHostUrl/api/admin/users';
 const kAdminUserUrl = '$kHostUrl/api/admin/user';
 const kAdminQuizUrl = '$kHostUrl/api/admin/quiz';
 const kExamineeUrl = '$kHostUrl/api/admin/examinee';
-const kExamineeListUrl = '$kHostUrl/api/admin/examinees';
-const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees/scores';
-const kAdminScoresUrl = '$kHostUrl/api/admin/examinees/scores/download';
+const kExamineesUrl = '$kHostUrl/api/admin/examinees';
+const kAdminExamineesScoreUrl = '$kHostUrl/api/admin/examinees/scores';
+const kAdminExamineesScoresDownloadUrl =
+    '$kHostUrl/api/admin/examinees/scores/download';
 const kAdminAnswersUrl = '$kHostUrl/api/admin/examinees/answers/download';
 
 const kRaterExamineeListUrl = '$kHostUrl/api/rater/examinees';
@@ -211,7 +212,7 @@ class AppService {
   }
 
   Future<List<Examinee>> fetchExamineeList() async {
-    final response = await http.get(Uri.parse(kExamineeListUrl),
+    final response = await http.get(Uri.parse(kExamineesUrl),
         headers: {'Authorization': 'Bearer $_token'});
 
     if (response.statusCode == 200) {
@@ -240,7 +241,7 @@ class AppService {
   }
 
   Future<List<Examinee>> fetchExamineeByAdminList() async {
-    final response = await http.get(Uri.parse(kAdminExamineeListUrl),
+    final response = await http.get(Uri.parse(kAdminExamineesScoreUrl),
         headers: {'Authorization': 'Bearer $_token'});
     if (response.statusCode == 200) {
       try {
@@ -274,6 +275,23 @@ class AppService {
     }
 
     return Future.error(response);
+  }
+
+  Future<String> uploadExaminees(Uint8List excelBytes) async {
+    Uri uri = Uri.parse(kExamineesUrl);
+    var request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = _token;
+    request.files.add(http.MultipartFile.fromBytes('examinees', excelBytes,
+        filename: 'examinees.xlsx',
+        contentType: MediaType('application/vnd.ms-excel', 'xlsx')));
+    http.StreamedResponse streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    if (response.statusCode == 200) {
+      MessageResponse msgResponse =
+          MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      return msgResponse.message;
+    }
+    return Future.error(response.body);
   }
 
   Future createExaminee(String code, String firstname, String lastname) async {
@@ -367,11 +385,11 @@ class AppService {
   }
 
   Future uploadQuiz(int seq, Uint8List videoBytes) async {
-    Uri uri = Uri.parse(kAdminQuizUrl);
+    Uri uri = Uri.parse('$kAdminQuizUrl/$seq');
     var request = http.MultipartRequest('PATCH', uri);
     request.headers['Authorization'] = _token;
-    request.files.add(http.MultipartFile.fromBytes('quiz$seq', videoBytes,
-        filename: 'quiz$seq.mp4', contentType: MediaType('video', 'mp4')));
+    request.files.add(http.MultipartFile.fromBytes('quiz', videoBytes,
+        filename: 'quiz.mp4', contentType: MediaType('video', 'mp4')));
     http.StreamedResponse streamedResponse = await request.send();
     if (streamedResponse.statusCode != 201) {
       return '';
@@ -389,7 +407,7 @@ class AppService {
 
   Future downloadScoreExcel() async {
     final response = await http.get(
-      Uri.parse(kAdminScoresUrl),
+      Uri.parse(kAdminExamineesScoresDownloadUrl),
       headers: {'Authorization': 'Bearer $_token'},
     );
     if (response.statusCode == 200) {
