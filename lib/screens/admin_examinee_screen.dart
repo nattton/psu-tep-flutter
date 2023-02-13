@@ -1,4 +1,7 @@
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:psutep/components/admin_examinee_card.dart';
 import 'package:psutep/models/examinee.dart';
 import 'package:psutep/services/app_service.dart';
@@ -35,6 +38,21 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
     super.dispose();
   }
 
+  void handlerErrorResponse(dynamic error) {
+    Response response = error as Response;
+    switch (response.statusCode) {
+      case 304:
+        alertError("not modified");
+        break;
+      case 401:
+        appService.logout().then((value) {
+          html.window.location.href = "/";
+        });
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -57,13 +75,14 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
       setState(() {
         examineeList = value;
       });
-    }).catchError((error) {});
+    }).catchError((error) {
+      handlerErrorResponse(error);
+    });
   }
 
   void addExaminee(Examinee examinee) {
     appService
-        .addExaminee(
-      examinee.id,
+        .createExaminee(
       _codeController.text,
       _firstnameController.text,
       _lastnameController.text,
@@ -72,23 +91,22 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
       Navigator.pop(context);
       getExaminee();
     }).catchError((error) {
-      alertError(error);
+      handlerErrorResponse(error);
     });
   }
 
-  void saveExaminee(Examinee examinee) {
+  void updateExaminee(Examinee examinee) {
     appService
-        .saveExaminee(
+        .updateExaminee(
       examinee.id,
       _codeController.text,
       _firstnameController.text,
       _lastnameController.text,
     )
         .then((value) {
-      Navigator.pop(context);
       getExaminee();
     }).catchError((error) {
-      alertError(error);
+      handlerErrorResponse(error);
     });
   }
 
@@ -153,10 +171,11 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
         buttons: [
           DialogButton(
             onPressed: () {
-              saveExaminee(examinee);
+              Navigator.pop(context);
+              updateExaminee(examinee);
             },
             child: const Text(
-              "Save",
+              "Update",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           )
@@ -217,14 +236,18 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
-              onSubmitted: (value) => saveExaminee(examinee),
+              onSubmitted: (value) {
+                Navigator.pop(context);
+                updateExaminee(examinee);
+              },
             ),
           ],
         ),
         buttons: [
           DialogButton(
             onPressed: () {
-              saveExaminee(examinee);
+              Navigator.pop(context);
+              updateExaminee(examinee);
             },
             child: const Text(
               "Save",

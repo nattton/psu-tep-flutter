@@ -26,12 +26,6 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     AppService.getInstance().then((value) {
       appService = value;
-      if (appService.getRole() != 'admin') {
-        appService.logout().then((value) {
-          html.window.location.href = "/";
-        });
-        return;
-      }
     });
     sideMenu.addListener((p0) {
       page.jumpToPage(p0);

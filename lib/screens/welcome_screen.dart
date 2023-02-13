@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:psutep/constants.dart';
 import 'package:psutep/screens/admin_screen.dart';
-import 'package:psutep/screens/exam_screen.dart';
 import 'package:psutep/screens/login_screen.dart';
 import 'package:psutep/screens/rater_examinee_screen.dart';
 import 'package:psutep/screens/test_record_screen.dart';

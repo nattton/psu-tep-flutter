@@ -97,7 +97,7 @@ class _ExamineeQuizScreenState extends State<ExamineeQuizScreen> {
                   Icon(Icons.mic),
                   SizedBox(width: 20),
                   Text(
-                    'Microphone recording...',
+                    'Microphone is recording...',
                     style: TextStyle(
                       fontSize: 26.0,
                       fontFamily: kDefaultFont,

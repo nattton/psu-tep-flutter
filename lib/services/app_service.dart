@@ -1,6 +1,7 @@
 import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html';
 import 'package:cross_file/cross_file.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -15,17 +16,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const kHostUrl = 'http://localhost:4000';
 const kLoginUrl = '$kHostUrl/api/login';
-const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
-const kSendAnswerUrl = '$kHostUrl/api/answer';
-const kExamineeListUrl = '$kHostUrl/api/examinees';
-const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees';
-const kAdminScoresUrl = '$kHostUrl/api/admin/scores';
-const kAdminAnswersUrl = '$kHostUrl/api/admin/answers';
+const kAdminUserListUrl = '$kHostUrl/api/admin/users';
+const kAdminUserUrl = '$kHostUrl/api/admin/user';
+const kAdminQuizUrl = '$kHostUrl/api/admin/quiz';
+const kExamineeUrl = '$kHostUrl/api/admin/examinee';
+const kExamineeListUrl = '$kHostUrl/api/admin/examinees';
+const kAdminExamineeListUrl = '$kHostUrl/api/admin/examinees/scores';
+const kAdminScoresUrl = '$kHostUrl/api/admin/examinees/scores/download';
+const kAdminAnswersUrl = '$kHostUrl/api/admin/examinees/answers/download';
+
 const kRaterExamineeListUrl = '$kHostUrl/api/rater/examinees';
 const kRaterScoreUrl = '$kHostUrl/api/rater/score';
-const kExamineeUrl = '$kHostUrl/api/examinee';
-const kUserListUrl = '$kHostUrl/api/users';
-const kUserUrl = '$kHostUrl/api/user';
+
+const kRefreshTokenUrl = '$kHostUrl/api/refresh_token';
+
+const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
+const kSendAnswerUrl = '$kHostUrl/api/examinee/answer';
+
 const kQuizUrl = '$kHostUrl/api/quiz';
 
 const kTokenKey = 'TOKEN_KEY';
@@ -133,6 +140,28 @@ class AppService {
     return Future.error(errorResponse.error);
   }
 
+  Future<LoginUser> fetchRefreshToken() async {
+    final response = await http.post(
+      Uri.parse(kRefreshTokenUrl),
+      headers: {'Authorization': 'Bearer $_token'},
+    );
+
+    if (response.statusCode == 200) {
+      LoginUser loginData =
+          LoginUser.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+
+      if (loginData.token.isNotEmpty) {
+        await _setToken(loginData.token);
+        await _setUser(loginData.user);
+        return loginData;
+      }
+    }
+
+    ErrorResponse errorResponse =
+        ErrorResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    return Future.error(errorResponse.error);
+  }
+
   Future<LoginExaminee> fetchLoginExaminee(
       String code, String firstname, String lastname) async {
     Map<String, String> body = {
@@ -161,18 +190,16 @@ class AppService {
     return Future.error(errorResponse.error);
   }
 
-  Future<String> sendAnswer(int seq, String path) async {
+  Future<String> sendAnswer(int ansNum, String path) async {
     final file = XFile(path);
-    final audioBytes = await file.readAsBytes();
-    print('lengthInBytes: ${audioBytes.lengthInBytes}');
-    Uri uri = Uri.parse(kSendAnswerUrl);
+    Uri uri = Uri.parse('$kSendAnswerUrl/$ansNum');
     var request = http.MultipartRequest('POST', uri);
     request.headers['Authorization'] = _token;
     request.files.add(http.MultipartFile.fromBytes(
-        'answer$seq', await file.readAsBytes(),
-        filename: 'answer$seq.wav', contentType: MediaType('audio', 'wav')));
+        'answer', await file.readAsBytes(),
+        filename: 'answer.wav', contentType: MediaType('audio', 'wav')));
     http.StreamedResponse streamedResponse = await request.send();
-    if (streamedResponse.statusCode != 201) {
+    if (streamedResponse.statusCode == 200) {
       return '';
     }
     final response = await http.Response.fromStream(streamedResponse);
@@ -192,9 +219,6 @@ class AppService {
         final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
         return (res as List).map((data) => Examinee.fromJson(data)).toList();
       } catch (e) {
-        if (kDebugMode) {
-          print('fetchExamineeList: $e');
-        }
         return Future.error(response);
       }
     }
@@ -209,9 +233,6 @@ class AppService {
         final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
         return (res as List).map((data) => Examinee.fromJson(data)).toList();
       } catch (e) {
-        if (kDebugMode) {
-          print('fetchExamineeByRaterList: $e');
-        }
         return Future.error(response);
       }
     }
@@ -226,9 +247,6 @@ class AppService {
         final res = jsonDecode(utf8.decode(response.bodyBytes))["examinees"];
         return (res as List).map((data) => Examinee.fromJson(data)).toList();
       } catch (e) {
-        if (kDebugMode) {
-          print('fetchExamineeByAdminList: $e');
-        }
         return Future.error(response);
       }
     }
@@ -248,18 +266,17 @@ class AppService {
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
+
     if (response.statusCode == 200) {
       MessageResponse msgResponse =
           MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       return msgResponse;
-    } else if (response.statusCode == 304) {
-      return Future.error("not modified");
     }
-    return Future.error(response.body);
+
+    return Future.error(response);
   }
 
-  Future createExaminee(
-      int id, String code, String firstname, String lastname) async {
+  Future createExaminee(String code, String firstname, String lastname) async {
     Map<String, String> body = {
       "code": code,
       "firstname": firstname,
@@ -274,39 +291,12 @@ class AppService {
       MessageResponse msgResponse =
           MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       return msgResponse;
-    } else if (response.statusCode == 304) {
-      return Future.error("not modified");
-    }
-    return Future.error(response.body);
-  }
-
-  Future addExaminee(
-      int id, String code, String firstname, String lastname) async {
-    Map<String, String> body = {
-      "code": code,
-      "firstname": firstname,
-      "lastname": lastname,
-    };
-    final response = await http.post(
-      Uri.parse(kExamineeUrl),
-      headers: {'Authorization': 'Bearer $_token'},
-      body: jsonEncode(body).toString(),
-    );
-    if (response.statusCode == 201) {
-      MessageResponse msgResponse =
-          MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
-      return msgResponse;
-    } else if (response.statusCode == 304) {
-      return Future.error("not modified");
     }
 
-    ErrorResponse errorResponse =
-        ErrorResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
-
-    return Future.error(errorResponse.error);
+    return Future.error(response);
   }
 
-  Future saveExaminee(
+  Future updateExaminee(
       int id, String code, String firstname, String lastname) async {
     Map<String, String> body = {
       "code": code,
@@ -318,21 +308,18 @@ class AppService {
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
+
     if (response.statusCode == 200) {
       MessageResponse msgResponse =
           MessageResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       return msgResponse;
-    } else if (response.statusCode == 304) {
-      return Future.error("not modified");
     }
-    ErrorResponse errorResponse =
-        ErrorResponse.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
 
-    return Future.error(errorResponse.error);
+    return Future.error(response);
   }
 
   Future<List<User>> fetchUserList() async {
-    final response = await http.get(Uri.parse(kUserListUrl),
+    final response = await http.get(Uri.parse(kAdminUserListUrl),
         headers: {'Authorization': 'Bearer $_token'});
 
     if (response.statusCode == 200) {
@@ -340,9 +327,6 @@ class AppService {
         final res = jsonDecode(utf8.decode(response.bodyBytes))["users"];
         return (res as List).map((data) => User.fromJson(data)).toList();
       } catch (e) {
-        if (kDebugMode) {
-          print('fetchUserList: $e');
-        }
         return Future.error(response);
       }
     }
@@ -355,7 +339,7 @@ class AppService {
       "password": password,
     };
     final response = await http.patch(
-      Uri.parse('$kUserUrl/$id'),
+      Uri.parse('$kAdminUserUrl/$id'),
       headers: {'Authorization': 'Bearer $_token'},
       body: jsonEncode(body).toString(),
     );
@@ -383,7 +367,7 @@ class AppService {
   }
 
   Future uploadQuiz(int seq, Uint8List videoBytes) async {
-    Uri uri = Uri.parse(kQuizUrl);
+    Uri uri = Uri.parse(kAdminQuizUrl);
     var request = http.MultipartRequest('PATCH', uri);
     request.headers['Authorization'] = _token;
     request.files.add(http.MultipartFile.fromBytes('quiz$seq', videoBytes,
@@ -403,15 +387,13 @@ class AppService {
     return Future.error(response.body);
   }
 
-  Future<String> downloadScoreExcel() async {
+  Future downloadScoreExcel() async {
     final response = await http.get(
       Uri.parse(kAdminScoresUrl),
       headers: {'Authorization': 'Bearer $_token'},
     );
     if (response.statusCode == 200) {
-      final path = await FileSaver.instance.saveFile(
-          "report_scores", response.bodyBytes, "xlsx",
-          mimeType: MimeType.MICROSOFTEXCEL);
+      webDownloadFile("report_scores.xlsx", response.bodyBytes);
       return "Download file Success.";
     }
 
@@ -424,12 +406,25 @@ class AppService {
       headers: {'Authorization': 'Bearer $_token'},
     );
     if (response.statusCode == 200) {
-      final path = await FileSaver.instance.saveFile(
-          "answers_audio", response.bodyBytes, "zip",
-          mimeType: MimeType.ZIP);
+      webDownloadFile("answers_audio.zip", response.bodyBytes);
       return "Download file Success.";
     }
 
     return Future.error(response.body);
+  }
+
+  void webDownloadFile(String filename, Uint8List bytes) {
+    // Encode our file in base64
+    final base64 = base64Encode(bytes);
+    // Create the link with the file
+    final anchor =
+        AnchorElement(href: 'data:application/octet-stream;base64,$base64')
+          ..target = 'blank';
+    // add the name
+    anchor.download = filename;
+
+    // trigger download
+    anchor.click();
+    anchor.remove();
   }
 }
