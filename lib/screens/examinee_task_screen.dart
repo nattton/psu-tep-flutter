@@ -8,32 +8,32 @@ import 'package:psutep/services/app_service.dart';
 import 'package:record/record.dart';
 import 'package:video_player/video_player.dart';
 
-class ExamineeQuizScreen extends StatefulWidget {
-  static const String id = "ExamineeQuizScreen";
-  const ExamineeQuizScreen({super.key, required this.quiz});
+class ExamineeTaskScreen extends StatefulWidget {
+  static const String id = "examinee_task_screen";
+  const ExamineeTaskScreen({super.key, required this.quiz});
 
-  final Quiz quiz;
+  final Task quiz;
   @override
-  State<ExamineeQuizScreen> createState() => _ExamineeQuizScreenState();
+  State<ExamineeTaskScreen> createState() => _ExamineeTaskScreenState();
 }
 
-class _ExamineeQuizScreenState extends State<ExamineeQuizScreen> {
+class _ExamineeTaskScreenState extends State<ExamineeTaskScreen> {
   late AppService appService;
   late VideoPlayerController _controller;
   final _audioRecorder = Record();
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
   bool startedPlaying = false;
-  int quizNumber = 1;
+  int taskNumber = 0;
 
   @override
   void initState() {
     _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       setState(() => _recordState = recordState);
     });
-    super.initState();
     AppService.getInstance().then((value) => appService = value);
-    setUpVideo(widget.quiz.quiz1);
+    super.initState();
+    setUpVideo(widget.quiz.task0);
   }
 
   void setUpVideo(String videoUrl) {
@@ -64,7 +64,7 @@ class _ExamineeQuizScreenState extends State<ExamineeQuizScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz $quizNumber'),
+        title: Text((taskNumber == 0) ? 'Instruction' : 'Task $taskNumber'),
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
@@ -89,7 +89,7 @@ class _ExamineeQuizScreenState extends State<ExamineeQuizScreen> {
               ),
             ),
             Visibility(
-              visible: _recordState == RecordState.record,
+              visible: (taskNumber > 0 && _recordState == RecordState.record),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,20 +119,27 @@ class _ExamineeQuizScreenState extends State<ExamineeQuizScreen> {
 
   void stopRecord() async {
     final path = await _audioRecorder.stop();
-    appService.sendAnswer(quizNumber, path!).then((value) {
-      setState(() {
-        quizNumber++;
-        if (quizNumber == 2) {
-          setUpVideo(widget.quiz.quiz2);
-        } else if (quizNumber == 3) {
-          setUpVideo(widget.quiz.quiz3);
-        } else if (quizNumber == 4) {
-          appService.logout().then((value) {
-            alertMessage();
-          });
-        }
+    if (taskNumber > 0) {
+      appService.sendAnswer(taskNumber, path!).then((value) {
+        setState(() {
+          taskNumber++;
+          if (taskNumber == 1) {
+            setUpVideo(widget.quiz.task1);
+          } else if (taskNumber == 2) {
+            setUpVideo(widget.quiz.task2);
+          } else if (taskNumber == 3) {
+            setUpVideo(widget.quiz.task3);
+          } else if (taskNumber == 4) {
+            appService.logout().then((value) {
+              alertMessage();
+            });
+          }
+        });
       });
-    });
+    } else if (taskNumber == 0) {
+      taskNumber++;
+      setUpVideo(widget.quiz.task1);
+    }
   }
 
   void alertMessage() {

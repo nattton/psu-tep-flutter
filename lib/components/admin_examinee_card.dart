@@ -20,7 +20,7 @@ class AdminExamineeCard extends StatelessWidget {
                 children: const [
                   Expanded(
                     child: Text(
-                      'Code',
+                      'Test Taker ID',
                       style: TextStyle(
                           fontFamily: kDefaultFont,
                           fontSize: 16.0,

@@ -130,7 +130,7 @@ class AdminScoreCard extends StatelessWidget {
                         Score score = examinee.scores[index];
                         return ListTile(
                           title: Text(
-                              '${score.user.name} : ${score.answer1} / ${score.answer2}  / ${score.answer1}'),
+                              '${score.user.name} : ${score.task1} / ${score.task2}  / ${score.task1}'),
                         );
                       },
                     ),

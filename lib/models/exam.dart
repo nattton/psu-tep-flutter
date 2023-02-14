@@ -1,16 +1,19 @@
-class Quiz {
-  String quiz1;
-  String quiz2;
-  String quiz3;
+class Task {
+  String task0;
+  String task1;
+  String task2;
+  String task3;
 
-  Quiz(
-    this.quiz1,
-    this.quiz2,
-    this.quiz3,
+  Task(
+    this.task0,
+    this.task1,
+    this.task2,
+    this.task3,
   );
 
-  Quiz.fromJson(Map<String, dynamic> json)
-      : quiz1 = json['quiz1'],
-        quiz2 = json['quiz2'],
-        quiz3 = json['quiz3'];
+  Task.fromJson(Map<String, dynamic> json)
+      : task0 = json['task0'],
+        task1 = json['task1'],
+        task2 = json['task2'],
+        task3 = json['task3'];
 }

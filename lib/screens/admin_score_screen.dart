@@ -15,7 +15,7 @@ class AdminScoreScreen extends StatefulWidget {
 
 class _AdminScoreScreenState extends State<AdminScoreScreen> {
   late AppService appService;
-  late Quiz quiz;
+  late Task quiz;
   List<Examinee> examinees = [];
 
   @override
@@ -53,7 +53,7 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
   }
 
   Future<void> getQuiz() async {
-    appService.fetchQuiz().then((value) {
+    appService.fetchTask().then((value) {
       setState(() {
         quiz = value;
       });

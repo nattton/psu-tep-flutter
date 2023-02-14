@@ -76,7 +76,7 @@ class _AdminUserScreenState extends State<AdminUserScreen> {
 
     Alert(
         context: context,
-        title: "Edit User",
+        title: "Change Password",
         content: Column(
           children: [
             const SizedBox(height: 8.0),
@@ -84,6 +84,7 @@ class _AdminUserScreenState extends State<AdminUserScreen> {
               controller: _usernameController,
               autofocus: false,
               autocorrect: false,
+              enabled: false,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 labelText: 'User',
@@ -101,7 +102,7 @@ class _AdminUserScreenState extends State<AdminUserScreen> {
               autocorrect: false,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
-                labelText: 'Password [blank if not change]',
+                labelText: 'New Password',
                 suffixIcon: const Icon(Icons.lock),
                 contentPadding:
                     const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),

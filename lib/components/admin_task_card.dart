@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:psutep/constants.dart';
 
-class AdminQuizCard extends StatelessWidget {
-  const AdminQuizCard(
+class AdminTaskCard extends StatelessWidget {
+  const AdminTaskCard(
       {super.key,
-      required this.seq,
+      required this.title,
+      required this.enabled,
       required this.onTapPlay,
       required this.onTapUpload});
 
-  final int seq;
+  final String title;
+  final bool enabled;
   final VoidCallback onTapPlay;
   final VoidCallback onTapUpload;
 
@@ -22,7 +24,7 @@ class AdminQuizCard extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Quiz $seq',
+                title,
                 style: const TextStyle(
                     fontFamily: kDefaultFont,
                     fontSize: 30.0,
@@ -32,10 +34,15 @@ class AdminQuizCard extends StatelessWidget {
             Expanded(
               child: GestureDetector(
                 onTap: onTapPlay,
-                child: const Icon(
-                  Icons.play_arrow,
-                  size: 30.0,
-                ),
+                child: enabled
+                    ? const Icon(
+                        Icons.play_arrow,
+                        size: 30.0,
+                      )
+                    : const Icon(
+                        Icons.play_disabled,
+                        size: 30.0,
+                      ),
               ),
             ),
             Expanded(

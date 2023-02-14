@@ -95,7 +95,7 @@ class RaterExamineeCard extends StatelessWidget {
                     child: Text(
                       examinee.scores.isEmpty
                           ? ''
-                          : '${examinee.scores[0].answer1} / ${examinee.scores[0].answer2} / ${examinee.scores[0].answer3}',
+                          : '${examinee.scores[0].task1} / ${examinee.scores[0].task2} / ${examinee.scores[0].task3}',
                       style: const TextStyle(
                         fontFamily: kDefaultFont,
                         fontSize: 16.0,

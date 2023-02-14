@@ -201,7 +201,7 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
               autocorrect: false,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Student Code',
+                labelText: 'Test Taker ID',
                 suffixIcon: const Icon(Icons.numbers),
                 contentPadding:
                     const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
@@ -245,7 +245,6 @@ class _AdminExamineeScreenState extends State<AdminExamineeScreen> {
         buttons: [
           DialogButton(
             onPressed: () {
-              Navigator.pop(context);
               creatExaminee();
             },
             child: const Text(

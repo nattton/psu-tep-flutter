@@ -16,7 +16,7 @@ class RaterAnswerScreen extends StatefulWidget {
   const RaterAnswerScreen(
       {super.key, required this.quiz, required this.examinee});
 
-  final Quiz quiz;
+  final Task quiz;
   final Examinee examinee;
   @override
   State<RaterAnswerScreen> createState() => _RaterAnswerScreenState();
@@ -32,7 +32,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   final _score2Controller = TextEditingController();
   final _score3Controller = TextEditingController();
 
-  Quiz get quiz => widget.quiz;
+  Task get quiz => widget.quiz;
   Examinee get examinee => widget.examinee;
 
   @override
@@ -44,7 +44,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
         canRateScore = appService.getRole() == "rater";
       });
     });
-    setUpVideo(quiz.quiz1);
+    setUpVideo(quiz.task1);
   }
 
   void selectQuiz(int selectedQuiz) async {
@@ -56,13 +56,13 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
     });
     switch (selectedQuiz) {
       case 1:
-        setUpVideo(quiz.quiz1);
+        setUpVideo(quiz.task1);
         break;
       case 2:
-        setUpVideo(quiz.quiz2);
+        setUpVideo(quiz.task2);
         break;
       case 3:
-        setUpVideo(quiz.quiz3);
+        setUpVideo(quiz.task3);
         break;
       default:
     }

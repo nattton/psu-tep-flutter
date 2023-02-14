@@ -17,7 +17,7 @@ class RaterExamineeScreen extends StatefulWidget {
 
 class _RaterExamineeScreenState extends State<RaterExamineeScreen> {
   late AppService appService;
-  late Quiz quiz;
+  late Task quiz;
   List<Examinee> examinees = [];
 
   @override
@@ -69,7 +69,7 @@ class _RaterExamineeScreenState extends State<RaterExamineeScreen> {
   }
 
   Future<void> getQuiz() async {
-    appService.fetchQuiz().then((value) {
+    appService.fetchTask().then((value) {
       setState(() {
         quiz = value;
       });

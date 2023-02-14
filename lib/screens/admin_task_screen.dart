@@ -1,27 +1,27 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:psutep/components/admin_quiz_card.dart';
+import 'package:psutep/components/admin_task_card.dart';
 import 'package:psutep/models/exam.dart';
 import 'package:psutep/screens/player_video_screen.dart';
 import 'package:psutep/services/app_service.dart';
 
-class AdminQuizScreen extends StatefulWidget {
-  const AdminQuizScreen({super.key});
+class AdminTaskScreen extends StatefulWidget {
+  const AdminTaskScreen({super.key});
 
   @override
-  State<AdminQuizScreen> createState() => _AdminQuizScreenState();
+  State<AdminTaskScreen> createState() => _AdminTaskScreenState();
 }
 
-class _AdminQuizScreenState extends State<AdminQuizScreen> {
+class _AdminTaskScreenState extends State<AdminTaskScreen> {
   late AppService appService;
-  Quiz quiz = Quiz("", "", "");
+  Task task = Task("", "", "", "");
 
   @override
   void initState() {
     super.initState();
     AppService.getInstance().then((value) {
       appService = value;
-      getQuiz();
+      getTask();
     });
   }
 
@@ -29,30 +29,43 @@ class _AdminQuizScreenState extends State<AdminQuizScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AdminQuizCard(
-            seq: 1,
-            onTapPlay: () => onPlayVideo(quiz.quiz1),
+        AdminTaskCard(
+            title: 'Instruction',
+            enabled: task.task0.isNotEmpty,
+            onTapPlay: () => onPlayVideo(task.task0),
+            onTapUpload: () => onUploadVideo(0)),
+        AdminTaskCard(
+            title: 'Task 1',
+            enabled: task.task1.isNotEmpty,
+            onTapPlay: () => onPlayVideo(task.task1),
             onTapUpload: () => onUploadVideo(1)),
-        AdminQuizCard(
-            seq: 2,
-            onTapPlay: () => onPlayVideo(quiz.quiz2),
+        AdminTaskCard(
+            title: 'Task 2',
+            enabled: task.task2.isNotEmpty,
+            onTapPlay: () => onPlayVideo(task.task2),
             onTapUpload: () => onUploadVideo(2)),
-        AdminQuizCard(
-            seq: 3,
-            onTapPlay: () => onPlayVideo(quiz.quiz3),
+        AdminTaskCard(
+            title: 'Task 3',
+            enabled: task.task3.isNotEmpty,
+            onTapPlay: () => onPlayVideo(task.task3),
             onTapUpload: () => onUploadVideo(3)),
       ],
     );
   }
 
-  Future<void> getQuiz() async {
-    appService.fetchQuiz().then((value) {
-      quiz = value;
+  void getTask() async {
+    appService.fetchTask().then((value) {
+      setState(() {
+        task = value;
+      });
     }).catchError((error) {});
   }
 
   void onPlayVideo(String videoUrl) {
-    Navigator.of(context).pushNamed(PlayerVideoScreen.id, arguments: videoUrl);
+    if (videoUrl.isNotEmpty) {
+      Navigator.of(context)
+          .pushNamed(PlayerVideoScreen.id, arguments: videoUrl);
+    }
   }
 
   void onUploadVideo(int seq) async {
@@ -62,9 +75,9 @@ class _AdminQuizScreenState extends State<AdminQuizScreen> {
     );
 
     if (result != null) {
-      appService.uploadQuiz(seq, result.files.first.bytes!).then((value) {
-        alertMessage('Save quiz succeed.');
-        getQuiz();
+      appService.uploadTask(seq, result.files.first.bytes!).then((value) {
+        alertMessage('Save task succeed.');
+        getTask();
       }).catchError((error) {
         alertMessage(error);
       });

@@ -28,10 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
     _codeController.dispose();
     _firstnameController.dispose();
     _lastnameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           autocorrect: false,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Student Code',
+                            labelText: 'Test Taker ID',
                             suffixIcon: const Icon(Icons.numbers),
                             contentPadding: const EdgeInsets.fromLTRB(
                                 20.0, 20.0, 20.0, 20.0),

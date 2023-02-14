@@ -1,21 +1,21 @@
 import 'package:psutep/models/user.dart';
 
 class Score {
-  double answer1;
-  double answer2;
-  double answer3;
+  double task1;
+  double task2;
+  double task3;
   User user;
 
   Score(
-    this.answer1,
-    this.answer2,
-    this.answer3,
+    this.task1,
+    this.task2,
+    this.task3,
     this.user,
   );
 
   Score.fromJson(Map<String, dynamic> json)
-      : answer1 = json['answer1'],
-        answer2 = json['answer2'],
-        answer3 = json['answer3'],
+      : task1 = json['task1'],
+        task2 = json['task2'],
+        task3 = json['task3'],
         user = User.fromJson(json['user']);
 }

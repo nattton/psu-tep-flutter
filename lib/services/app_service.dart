@@ -18,7 +18,7 @@ const kHostUrl = 'http://localhost:4000';
 const kLoginUrl = '$kHostUrl/api/login';
 const kAdminUserListUrl = '$kHostUrl/api/admin/users';
 const kAdminUserUrl = '$kHostUrl/api/admin/user';
-const kAdminQuizUrl = '$kHostUrl/api/admin/quiz';
+const kAdminTaskUrl = '$kHostUrl/api/admin/task';
 const kExamineeUrl = '$kHostUrl/api/admin/examinee';
 const kExamineesUrl = '$kHostUrl/api/admin/examinees';
 const kAdminExamineesScoreUrl = '$kHostUrl/api/admin/examinees/scores';
@@ -34,7 +34,7 @@ const kRefreshTokenUrl = '$kHostUrl/api/refresh_token';
 const kLoginExamineeUrl = '$kHostUrl/api/login_examinee';
 const kSendAnswerUrl = '$kHostUrl/api/examinee/answer';
 
-const kQuizUrl = '$kHostUrl/api/quiz';
+const kTaskUrl = '$kHostUrl/api/task';
 
 const kTokenKey = 'TOKEN_KEY';
 const kRoleKey = 'ROLE_KEY';
@@ -255,12 +255,12 @@ class AppService {
   }
 
   Future rateScore(
-      int examineeID, double answer1, double answer2, double answer3) async {
+      int examineeID, double task1, double task2, double task3) async {
     Map<String, dynamic> body = {
       "examinee_id": examineeID,
-      "answer1": answer1,
-      "answer2": answer2,
-      "answer3": answer3,
+      "task1": task1,
+      "task2": task2,
+      "task3": task3,
     };
     final response = await http.post(
       Uri.parse(kRaterScoreUrl),
@@ -371,25 +371,25 @@ class AppService {
     return Future.error(response.body);
   }
 
-  Future<Quiz> fetchQuiz() async {
+  Future<Task> fetchTask() async {
     final response = await http.get(
-      Uri.parse(kQuizUrl),
+      Uri.parse(kTaskUrl),
       headers: {'Authorization': 'Bearer $_token'},
     );
     if (response.statusCode == 200) {
-      Quiz exam = Quiz.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+      Task exam = Task.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
       return exam;
     }
 
     return Future.error(response.body);
   }
 
-  Future uploadQuiz(int seq, Uint8List videoBytes) async {
-    Uri uri = Uri.parse('$kAdminQuizUrl/$seq');
+  Future uploadTask(int seq, Uint8List videoBytes) async {
+    Uri uri = Uri.parse('$kAdminTaskUrl/$seq');
     var request = http.MultipartRequest('PATCH', uri);
     request.headers['Authorization'] = _token;
-    request.files.add(http.MultipartFile.fromBytes('quiz', videoBytes,
-        filename: 'quiz.mp4', contentType: MediaType('video', 'mp4')));
+    request.files.add(http.MultipartFile.fromBytes('task', videoBytes,
+        filename: 'task.mp4', contentType: MediaType('video', 'mp4')));
     http.StreamedResponse streamedResponse = await request.send();
     if (streamedResponse.statusCode != 201) {
       return '';
