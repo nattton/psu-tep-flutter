@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
             final map = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(builder: (context) {
               return RaterAnswerScreen(
-                  quiz: map["quiz"], examinee: map["examinee"]);
+                  task: map["quiz"], examinee: map["examinee"]);
             });
           default:
         }

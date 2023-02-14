@@ -6,6 +6,7 @@ class Examinee {
   String? code;
   String? firstname;
   String? lastname;
+  String? answer0;
   String? answer1;
   String? answer2;
   String? answer3;
@@ -17,6 +18,7 @@ class Examinee {
     this.code,
     this.firstname,
     this.lastname,
+    this.answer0,
     this.answer1,
     this.answer2,
     this.answer3,
@@ -28,6 +30,7 @@ class Examinee {
     code = json['code'];
     firstname = json['firstname'];
     lastname = json['lastname'];
+    answer0 = json['answer0'] ?? '';
     answer1 = json['answer1'] ?? '';
     answer2 = json['answer2'] ?? '';
     answer3 = json['answer3'] ?? '';
@@ -43,6 +46,7 @@ class Examinee {
         'code': code,
         'firstname': firstname,
         'lastname': lastname,
+        'answer0': answer0,
         'answer1': answer1,
         'answer2': answer2,
         'answer3': answer3,

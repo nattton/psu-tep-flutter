@@ -14,9 +14,9 @@ import 'package:psutep/services/app_service.dart';
 class RaterAnswerScreen extends StatefulWidget {
   static const String id = "rater_answer_screen";
   const RaterAnswerScreen(
-      {super.key, required this.quiz, required this.examinee});
+      {super.key, required this.task, required this.examinee});
 
-  final Task quiz;
+  final Task task;
   final Examinee examinee;
   @override
   State<RaterAnswerScreen> createState() => _RaterAnswerScreenState();
@@ -26,18 +26,23 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   late AppService appService;
   late VideoPlayerController _controller;
   final _audioPlayer = ap.AudioPlayer();
+  late StreamSubscription<void> _playerStateChangedSubscription;
   bool canRateScore = false;
-  int quizNumber = 1;
+  int taskNumber = 0;
   final _score1Controller = TextEditingController();
   final _score2Controller = TextEditingController();
   final _score3Controller = TextEditingController();
 
-  Task get quiz => widget.quiz;
+  Task get quiz => widget.task;
   Examinee get examinee => widget.examinee;
 
   @override
   void initState() {
-    super.initState();
+    _playerStateChangedSubscription =
+        _audioPlayer.onPlayerComplete.listen((state) async {
+      await stop();
+      setState(() {});
+    });
     AppService.getInstance().then((value) {
       appService = value;
       setState(() {
@@ -45,16 +50,20 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
       });
     });
     setUpVideo(quiz.task1);
+    super.initState();
   }
 
   void selectQuiz(int selectedQuiz) async {
-    if (quizNumber == selectedQuiz) return;
+    if (taskNumber == selectedQuiz) return;
     await _controller.pause();
     await _audioPlayer.pause();
     setState(() {
-      quizNumber = selectedQuiz;
+      taskNumber = selectedQuiz;
     });
     switch (selectedQuiz) {
+      case 0:
+        playAudio();
+        break;
       case 1:
         setUpVideo(quiz.task1);
         break;
@@ -69,7 +78,13 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   }
 
   Future<void> playAudio() {
-    switch (quizNumber) {
+    switch (taskNumber) {
+      case 0:
+        if (_audioPlayer.state == ap.PlayerState.playing) {
+          return _audioPlayer.pause();
+        } else {
+          return _audioPlayer.play(ap.UrlSource(examinee.answer0!));
+        }
       case 1:
         return _audioPlayer.play(ap.UrlSource(examinee.answer1!));
       case 2:
@@ -119,27 +134,31 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
         child: Center(
           child: Column(
             children: <Widget>[
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: 1024,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: <Widget>[
-                        VideoPlayer(_controller),
-                        ClosedCaption(text: _controller.value.caption.text),
-                        _ControlsOverlay(
-                          controller: _controller,
-                          onPlay: () => playAudio(),
-                          onPause: () => pause(),
-                        ),
-                        _VideoAudioProgressIndicator(_controller, _audioPlayer,
-                            allowScrubbing: true),
-                      ],
+              Visibility(
+                visible: taskNumber > 0,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 1024,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: <Widget>[
+                          VideoPlayer(_controller),
+                          ClosedCaption(text: _controller.value.caption.text),
+                          _ControlsOverlay(
+                            controller: _controller,
+                            onPlay: () => playAudio(),
+                            onPause: () => pause(),
+                          ),
+                          _VideoAudioProgressIndicator(
+                              _controller, _audioPlayer,
+                              allowScrubbing: true),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -150,20 +169,26 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                 children: [
                   Expanded(
                       child: QuizSelectButton(
+                    title: 'Introduce',
+                    selected: taskNumber == 0,
+                    onPressed: () => selectQuiz(0),
+                  )),
+                  Expanded(
+                      child: QuizSelectButton(
                     title: 'Quiz 1',
-                    selected: quizNumber == 1,
+                    selected: taskNumber == 1,
                     onPressed: () => selectQuiz(1),
                   )),
                   Expanded(
                       child: QuizSelectButton(
                     title: 'Quiz 2',
-                    selected: quizNumber == 2,
+                    selected: taskNumber == 2,
                     onPressed: () => selectQuiz(2),
                   )),
                   Expanded(
                       child: QuizSelectButton(
                     title: 'Quiz 3',
-                    selected: quizNumber == 3,
+                    selected: taskNumber == 3,
                     onPressed: () => selectQuiz(3),
                   )),
                 ],
@@ -174,6 +199,24 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Expanded(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        child: Icon(
+                            (taskNumber == 0 &&
+                                    _audioPlayer.state ==
+                                        ap.PlayerState.playing)
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            size: 30),
+                        onTap: () {
+                          setState(() {
+                            playAudio();
+                          });
+                        },
+                      ),
+                    )),
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
