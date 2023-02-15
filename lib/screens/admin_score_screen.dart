@@ -15,7 +15,7 @@ class AdminScoreScreen extends StatefulWidget {
 
 class _AdminScoreScreenState extends State<AdminScoreScreen> {
   late AppService appService;
-  late Task quiz;
+  late Task task;
   List<Examinee> examinees = [];
 
   @override
@@ -23,7 +23,7 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     super.initState();
     AppService.getInstance().then((value) {
       appService = value;
-      getQuiz();
+      getTask();
       getExamineeByAdmin();
     });
   }
@@ -52,10 +52,10 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
     );
   }
 
-  Future<void> getQuiz() async {
+  Future<void> getTask() async {
     appService.fetchTask().then((value) {
       setState(() {
-        quiz = value;
+        task = value;
       });
     }).catchError((error) {});
   }
@@ -78,7 +78,7 @@ class _AdminScoreScreenState extends State<AdminScoreScreen> {
 
   void onPressedView(Examinee examinee) async {
     await Navigator.of(context).pushNamed(RaterAnswerScreen.id,
-        arguments: {"quiz": quiz, 'examinee': examinee});
+        arguments: {"task": task, 'examinee': examinee});
     getExamineeByAdmin();
   }
 }

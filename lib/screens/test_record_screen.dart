@@ -183,8 +183,8 @@ class _TestRecordScreenState extends State<TestRecordScreen> {
                 Visibility(
                   visible: showPlayer,
                   child: ElevatedButton(
-                      onPressed: () => startQuiz(),
-                      child: const Text('Start Quiz',
+                      onPressed: () => startTest(),
+                      child: const Text('Start Test',
                           style: TextStyle(color: Colors.white, fontSize: 20))),
                 )
               ],
@@ -195,10 +195,10 @@ class _TestRecordScreenState extends State<TestRecordScreen> {
     );
   }
 
-  void startQuiz() {
+  void startTest() {
     appService.sendAnswer(0, audioPath!).then((value) {
-      appService.fetchTask().then((quiz) {
-        Navigator.of(context).pushNamed(ExamineeTaskScreen.id, arguments: quiz);
+      appService.fetchTask().then((task) {
+        Navigator.of(context).pushNamed(ExamineeTaskScreen.id, arguments: task);
       });
     });
   }

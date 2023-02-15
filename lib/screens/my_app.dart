@@ -40,15 +40,15 @@ class MyApp extends StatelessWidget {
             });
 
           case ExamineeTaskScreen.id:
-            final quiz = settings.arguments as Task;
+            final task = settings.arguments as Task;
             return MaterialPageRoute(builder: (context) {
-              return ExamineeTaskScreen(quiz: quiz);
+              return ExamineeTaskScreen(task: task);
             });
           case RaterAnswerScreen.id:
             final map = settings.arguments as Map<String, dynamic>;
             return MaterialPageRoute(builder: (context) {
               return RaterAnswerScreen(
-                  task: map["quiz"], examinee: map["examinee"]);
+                  task: map["task"], examinee: map["examinee"]);
             });
           default:
         }

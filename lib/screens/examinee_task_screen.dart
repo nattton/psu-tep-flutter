@@ -10,9 +10,9 @@ import 'package:video_player/video_player.dart';
 
 class ExamineeTaskScreen extends StatefulWidget {
   static const String id = "examinee_task_screen";
-  const ExamineeTaskScreen({super.key, required this.quiz});
+  const ExamineeTaskScreen({super.key, required this.task});
 
-  final Task quiz;
+  final Task task;
   @override
   State<ExamineeTaskScreen> createState() => _ExamineeTaskScreenState();
 }
@@ -33,7 +33,7 @@ class _ExamineeTaskScreenState extends State<ExamineeTaskScreen> {
     });
     AppService.getInstance().then((value) => appService = value);
     super.initState();
-    setUpVideo(widget.quiz.task0);
+    setUpVideo(widget.task.task0);
   }
 
   void setUpVideo(String videoUrl) {
@@ -124,11 +124,11 @@ class _ExamineeTaskScreenState extends State<ExamineeTaskScreen> {
         setState(() {
           taskNumber++;
           if (taskNumber == 1) {
-            setUpVideo(widget.quiz.task1);
+            setUpVideo(widget.task.task1);
           } else if (taskNumber == 2) {
-            setUpVideo(widget.quiz.task2);
+            setUpVideo(widget.task.task2);
           } else if (taskNumber == 3) {
-            setUpVideo(widget.quiz.task3);
+            setUpVideo(widget.task.task3);
           } else if (taskNumber == 4) {
             appService.logout().then((value) {
               alertMessage();
@@ -138,7 +138,7 @@ class _ExamineeTaskScreenState extends State<ExamineeTaskScreen> {
       });
     } else if (taskNumber == 0) {
       taskNumber++;
-      setUpVideo(widget.quiz.task1);
+      setUpVideo(widget.task.task1);
     }
   }
 

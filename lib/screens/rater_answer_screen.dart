@@ -33,7 +33,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   final _score2Controller = TextEditingController();
   final _score3Controller = TextEditingController();
 
-  Task get quiz => widget.task;
+  Task get task => widget.task;
   Examinee get examinee => widget.examinee;
 
   @override
@@ -49,29 +49,29 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
         canRateScore = appService.getRole() == "rater";
       });
     });
-    setUpVideo(quiz.task1);
+    setUpVideo(task.task1);
     super.initState();
   }
 
-  void selectQuiz(int selectedQuiz) async {
-    if (taskNumber == selectedQuiz) return;
+  void selectTask(int selectedTask) async {
+    if (taskNumber == selectedTask) return;
     await _controller.pause();
     await _audioPlayer.pause();
     setState(() {
-      taskNumber = selectedQuiz;
+      taskNumber = selectedTask;
     });
-    switch (selectedQuiz) {
+    switch (selectedTask) {
       case 0:
         playAudio();
         break;
       case 1:
-        setUpVideo(quiz.task1);
+        setUpVideo(task.task1);
         break;
       case 2:
-        setUpVideo(quiz.task2);
+        setUpVideo(task.task2);
         break;
       case 3:
-        setUpVideo(quiz.task3);
+        setUpVideo(task.task3);
         break;
       default:
     }
@@ -93,7 +93,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
         return _audioPlayer.play(ap.UrlSource(examinee.answer3!));
       default:
     }
-    return Future.error('invalid quizNumber');
+    return Future.error('invalid Task Number');
   }
 
   Future<void> pause() => _audioPlayer.pause();
@@ -168,28 +168,28 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: QuizSelectButton(
+                      child: TaskSelectButton(
                     title: 'Introduce',
                     selected: taskNumber == 0,
-                    onPressed: () => selectQuiz(0),
+                    onPressed: () => selectTask(0),
                   )),
                   Expanded(
-                      child: QuizSelectButton(
-                    title: 'Quiz 1',
+                      child: TaskSelectButton(
+                    title: 'Task 1',
                     selected: taskNumber == 1,
-                    onPressed: () => selectQuiz(1),
+                    onPressed: () => selectTask(1),
                   )),
                   Expanded(
-                      child: QuizSelectButton(
-                    title: 'Quiz 2',
+                      child: TaskSelectButton(
+                    title: 'Task 2',
                     selected: taskNumber == 2,
-                    onPressed: () => selectQuiz(2),
+                    onPressed: () => selectTask(2),
                   )),
                   Expanded(
-                      child: QuizSelectButton(
-                    title: 'Quiz 3',
+                      child: TaskSelectButton(
+                    title: 'Task 3',
                     selected: taskNumber == 3,
-                    onPressed: () => selectQuiz(3),
+                    onPressed: () => selectTask(3),
                   )),
                 ],
               ),
@@ -226,7 +226,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                           autocorrect: false,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Score Quiz 1',
+                            labelText: 'Score Task 1',
                             contentPadding: const EdgeInsets.fromLTRB(
                                 20.0, 20.0, 20.0, 20.0),
                             border: OutlineInputBorder(
@@ -244,7 +244,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                           autocorrect: false,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Score Quiz 2',
+                            labelText: 'Score Task 2',
                             contentPadding: const EdgeInsets.fromLTRB(
                                 20.0, 20.0, 20.0, 20.0),
                             border: OutlineInputBorder(
@@ -262,7 +262,7 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
                           autocorrect: false,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            labelText: 'Score Quiz 3',
+                            labelText: 'Score Task 3',
                             contentPadding: const EdgeInsets.fromLTRB(
                                 20.0, 20.0, 20.0, 20.0),
                             border: OutlineInputBorder(
@@ -324,8 +324,8 @@ class _RaterAnswerScreenState extends State<RaterAnswerScreen> {
   }
 }
 
-class QuizSelectButton extends StatelessWidget {
-  const QuizSelectButton({
+class TaskSelectButton extends StatelessWidget {
+  const TaskSelectButton({
     super.key,
     required this.title,
     required this.selected,
