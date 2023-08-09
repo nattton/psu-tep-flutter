@@ -17,8 +17,8 @@ class _PlayerVideoScreenState extends State<PlayerVideoScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(
-      widget.videoUrl,
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.videoUrl),
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
 

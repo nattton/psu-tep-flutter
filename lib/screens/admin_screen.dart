@@ -73,7 +73,6 @@ class _AdminScreenState extends State<AdminScreen> {
             ),
             items: [
               SideMenuItem(
-                priority: 0,
                 title: 'Examinees',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
@@ -82,7 +81,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 tooltipContent: "This is a tooltip for Dashboard item",
               ),
               SideMenuItem(
-                priority: 1,
                 title: 'Users',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
@@ -90,7 +88,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 icon: const Icon(Icons.supervisor_account),
               ),
               SideMenuItem(
-                priority: 2,
                 title: 'Tasks',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
@@ -98,7 +95,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 icon: const Icon(Icons.video_library),
               ),
               SideMenuItem(
-                priority: 3,
                 title: 'Score',
                 onTap: (page, _) {
                   sideMenu.changePage(page);
@@ -106,7 +102,6 @@ class _AdminScreenState extends State<AdminScreen> {
                 icon: const Icon(Icons.rate_review),
               ),
               SideMenuItem(
-                priority: 4,
                 title: 'Exit',
                 icon: const Icon(Icons.exit_to_app),
                 onTap: (page, _) {

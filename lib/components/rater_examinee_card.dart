@@ -14,10 +14,10 @@ class RaterExamineeCard extends StatelessWidget {
     return examinee.id == 0
         ? Card(
             color: Colors.red.shade100,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Row(
-                children: const [
+                children: [
                   Expanded(
                     child: Text(
                       'Code',
